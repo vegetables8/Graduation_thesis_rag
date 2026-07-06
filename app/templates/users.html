@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}权限管理 — Atlas{% endblock %}
+{% block page_heading %}权限管理{% endblock %}
+{% block page_subheading %}管理用户角色{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div>
+            <div class="section-title mb-1">用户列表</div>
+            <div class="small text-secondary">角色值：学生、课题管理员、教务管理员、审计管理员。</div>
+        </div>
+        <button class="btn btn-outline-secondary btn-sm" id="refresh-users-button">刷新列表</button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle" id="user-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>用户名</th>
+                    <th>当前角色</th>
+                    <th>创建时间</th>
+                    <th>上次登录</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr data-user-id="{{ user.id }}">
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>
+                        <select class="form-select form-select-sm role-select">
+                            <option value="student" {% if user.role == 'student' %}selected{% endif %}>学生</option>
+                            <option value="topic_admin" {% if user.role == 'topic_admin' %}selected{% endif %}>课题管理员</option>
+                            <option value="academic_admin" {% if user.role == 'academic_admin' %}selected{% endif %}>教务管理员</option>
+                            <option value="audit_admin" {% if user.role == 'audit_admin' %}selected{% endif %}>审计管理员</option>
+                        </select>
+                    </td>
+                    <td>{{ user.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ user.last_login_at.strftime('%Y-%m-%d %H:%M:%S') if user.last_login_at else '' }}</td>
+                    <td><button class="btn btn-sm btn-primary update-role-button">保存</button></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-secondary">暂无用户</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

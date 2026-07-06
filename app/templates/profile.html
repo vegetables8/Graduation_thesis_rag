@@ -1,0 +1,55 @@
+﻿{% extends "base.html" %}
+
+{% block title %}个人中心 — Atlas{% endblock %}
+{% block page_heading %}个人中心{% endblock %}
+{% block page_subheading %}查看账号信息与角色权限{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="content-card">
+            <div class="section-title">账号信息</div>
+            <dl class="row mb-0">
+                <dt class="col-sm-4">用户名</dt>
+                <dd class="col-sm-8">{{ current_user.username }}</dd>
+
+                <dt class="col-sm-4">角色</dt>
+                <dd class="col-sm-8">{{ current_user.role_label }}</dd>
+
+                <dt class="col-sm-4">创建时间</dt>
+                <dd class="col-sm-8">{{ current_user.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</dd>
+
+                <dt class="col-sm-4">上次登录</dt>
+                <dd class="col-sm-8">{{ current_user.last_login_at.strftime('%Y-%m-%d %H:%M:%S') if current_user.last_login_at else '首次登录' }}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="content-card">
+            <div class="section-title">当前角色权限</div>
+            <ul class="permission-list mb-0">
+                {% for item in permission_descriptions %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>当前角色暂无额外说明。</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="content-card mt-4">
+    <div class="section-title">导航</div>
+    <div class="row g-3">
+        <div class="col-md-3"><div class="mini-panel">登录</div></div>
+        <div class="col-md-3"><div class="mini-panel">概览</div></div>
+        <div class="col-md-3"><div class="mini-panel">语义检索</div></div>
+        <div class="col-md-3"><div class="mini-panel">智能问答</div></div>
+        <div class="col-md-3"><div class="mini-panel">资料中心</div></div>
+        <div class="col-md-3"><div class="mini-panel">资料上传</div></div>
+        <div class="col-md-3"><div class="mini-panel">历史记录</div></div>
+        <div class="col-md-3"><div class="mini-panel">权限管理</div></div>
+    </div>
+</div>
+{% endblock %}

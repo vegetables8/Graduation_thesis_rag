@@ -1,0 +1,29 @@
+# 企业知识库大模型问答系统 - 依赖清单（修复版）
+# 说明：此版本使用兼容的包版本，避免 Python 3.11 Beta 的兼容性问题
+
+# Flask Web框架
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+Werkzeug==2.3.7
+
+# 向量数据库
+chromadb==0.4.24
+
+# 文档解析库
+PyPDF2==3.0.1
+python-docx==1.1.0
+
+# HTTP请求
+requests==2.31.0
+
+# 修复兼容性问题
+typing_extensions==4.8.0
+sqlalchemy==1.4.52
+
+# 科学计算（预编译版本）
+numpy==1.26.2
+scipy==1.11.4
+
+# 机器学习（用于向量化）
+scikit-learn==1.3.2
+sentence-transformers==2.2.2

@@ -1,0 +1,148 @@
+﻿{% extends "base.html" %}
+
+{% block title %}概览 — Atlas{% endblock %}
+{% block page_heading %}概览{% endblock %}
+{% block page_subheading %}查看平台状态与最近活动{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="metric-card">
+            <div class="metric-label">当前角色</div>
+            <div class="metric-value">{{ current_user.role_label }}</div>
+            <div class="metric-desc">基于角色的权限控制</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="metric-card">
+            <div class="metric-label">资料总数</div>
+            <div class="metric-value">{{ stats.document_count }}</div>
+            <div class="metric-desc">已解析并完成向量索引</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="metric-card">
+            <div class="metric-label">我的问答</div>
+            <div class="metric-value">{{ stats.qa_count }}</div>
+            <div class="metric-desc">当前账号的问答记录</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="metric-card">
+            <div class="metric-label">我的检索</div>
+            <div class="metric-value">{{ stats.search_count }}</div>
+            <div class="metric-desc">语义检索次数</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="content-card h-100">
+            <div class="section-title">平台能力</div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="mini-panel">
+                        <h6>检索增强问答</h6>
+                        <p class="mb-0 text-secondary small">基于知识库上下文调用大语言模型，回答附带引用溯源。</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mini-panel">
+                        <h6>语义检索引擎</h6>
+                        <p class="mb-0 text-secondary small">通过向量相似度匹配深层语义，支持语义、关键词与混合模式。</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mini-panel">
+                        <h6>自动文档处理</h6>
+                        <p class="mb-0 text-secondary small">上传后自动解析、分块、向量化，无需手动操作。</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mini-panel">
+                        <h6>角色权限管理</h6>
+                        <p class="mb-0 text-secondary small">四类角色各司其职，操作记录全程审计。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="content-card h-100">
+            <div class="section-title">快捷入口</div>
+            <div class="quick-links">
+                <a href="{{ url_for('main.search_page') }}" class="quick-link-card">语义检索</a>
+                <a href="{{ url_for('main.chat_page') }}" class="quick-link-card">智能问答</a>
+                <a href="{{ url_for('main.documents_page') }}" class="quick-link-card">资料中心</a>
+                <a href="{{ url_for('main.history_page') }}" class="quick-link-card">历史记录</a>
+                <a href="{{ url_for('main.profile_page') }}" class="quick-link-card">个人中心</a>
+                {% if current_user.role == 'topic_admin' %}
+                <a href="{{ url_for('main.upload_page') }}" class="quick-link-card">资料上传</a>
+                {% endif %}
+                {% if current_user.role == 'academic_admin' %}
+                <a href="{{ url_for('main.users_page') }}" class="quick-link-card">权限管理</a>
+                {% endif %}
+                {% if current_user.role == 'audit_admin' %}
+                <a href="{{ url_for('main.audits_page') }}" class="quick-link-card">审计中心</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-6">
+        <div class="content-card">
+            <div class="section-title">最近资料</div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>文件名</th>
+                            <th>状态</th>
+                            <th>分块数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in recent_documents %}
+                        <tr>
+                            <td>{{ doc.original_name }}</td>
+                            <td><span class="badge text-bg-light">{{ doc.status }}</span></td>
+                            <td>{{ doc.chunk_count }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3" class="text-center text-secondary">暂无资料</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="content-card">
+            <div class="section-title">最近活动</div>
+            <div class="timeline-stack">
+                {% for item in recent_qa_histories %}
+                <div class="timeline-item">
+                    <div class="timeline-tag">问答</div>
+                    <div class="small fw-semibold">{{ item.question }}</div>
+                    <div class="small text-secondary">{{ item.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                </div>
+                {% endfor %}
+                {% for item in recent_search_histories %}
+                <div class="timeline-item">
+                    <div class="timeline-tag timeline-tag-search">检索</div>
+                    <div class="small fw-semibold">{{ item.keyword }}</div>
+                    <div class="small text-secondary">{{ item.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                </div>
+                {% endfor %}
+                {% if not recent_qa_histories and not recent_search_histories %}
+                <div class="text-secondary small">暂无活动记录。</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

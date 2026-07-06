@@ -1,0 +1,68 @@
+﻿{% extends "base.html" %}
+
+{% block title %}历史记录 — Atlas{% endblock %}
+{% block page_heading %}历史记录{% endblock %}
+{% block page_subheading %}查看检索与问答历史{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="content-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="section-title mb-0">问答历史</div>
+                <button class="btn btn-outline-secondary btn-sm" id="refresh-history-button">刷新</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle" id="history-qa-table">
+                    <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>问题</th>
+                            <th>引用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in qa_histories %}
+                        <tr>
+                            <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td>{{ item.question }}</td>
+                            <td>{{ item.reference_documents }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3" class="text-center text-secondary">暂无问答历史</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="content-card">
+            <div class="section-title">检索历史</div>
+            <div class="table-responsive">
+                <table class="table align-middle" id="history-search-table">
+                    <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>关键词</th>
+                            <th>返回条数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in search_histories %}
+                        <tr>
+                            <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td>{{ item.keyword }}</td>
+                            <td>{{ item.top_k }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3" class="text-center text-secondary">暂无检索历史</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

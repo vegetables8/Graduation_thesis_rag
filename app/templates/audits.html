@@ -1,0 +1,46 @@
+﻿{% extends "base.html" %}
+
+{% block title %}审计中心 — Atlas{% endblock %}
+{% block page_heading %}审计中心{% endblock %}
+{% block page_subheading %}查看关键操作日志{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div>
+            <div class="section-title mb-1">操作日志</div>
+            <div class="small text-secondary">包含登录、退出、权限变更、资料上传、检索、问答等记录。</div>
+        </div>
+        <button class="btn btn-outline-secondary btn-sm" id="refresh-audits-button">刷新日志</button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle" id="audit-table">
+            <thead>
+                <tr>
+                    <th>时间</th>
+                    <th>用户</th>
+                    <th>动作</th>
+                    <th>目标</th>
+                    <th>详情</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in audits %}
+                <tr>
+                    <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ item.username_snapshot }}</td>
+                    <td>{{ item.action }}</td>
+                    <td>{{ item.target_type }} / {{ item.target_id }}</td>
+                    <td>{{ item.detail }}</td>
+                    <td>{{ item.ip_address }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-secondary">暂无审计日志</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

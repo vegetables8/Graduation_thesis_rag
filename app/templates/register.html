@@ -1,0 +1,42 @@
+﻿{% extends "base.html" %}
+{% block title %}注册 — Atlas{% endblock %}
+
+{% block body_class %}auth-page{% endblock %}
+
+{% block auth_content %}
+<div class="auth-wrapper">
+    <div class="login-card" style="max-width: 440px; width: 100%;">
+        <div class="text-center mb-4">
+            <div class="brand-badge mx-auto mb-3" style="background: var(--text); color: var(--bg);">A</div>
+            <h2>创建账号</h2>
+            <p class="text-secondary" style="font-size: 0.875rem;">注册后即可使用语义检索与智能问答</p>
+        </div>
+
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label" for="username">用户名</label>
+                <input type="text" class="form-control" id="username" name="username"
+                       placeholder="3-20 位字母、数字或下划线"
+                       minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]+" required autofocus>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="password">密码</label>
+                <input type="password" class="form-control" id="password" name="password"
+                       placeholder="至少 6 位，需包含字母和数字"
+                       minlength="6" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="confirm_password">确认密码</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                       placeholder="请再次输入密码"
+                       minlength="6" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">注册</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <small class="text-secondary">已有账号？<a href="{{ url_for('auth.login') }}">立即登录</a></small>
+        </div>
+    </div>
+</div>
+{% endblock %}

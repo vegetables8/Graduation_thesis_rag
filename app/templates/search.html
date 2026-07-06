@@ -1,0 +1,72 @@
+﻿{% extends "base.html" %}
+
+{% block title %}语义检索 — Atlas{% endblock %}
+{% block page_heading %}语义检索{% endblock %}
+{% block page_subheading %}基于向量数据库的深层语义匹配{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="content-card">
+            <div class="section-title">检索条件</div>
+            <form id="search-form">
+                <div class="mb-3">
+                    <label class="form-label">问题或关键词</label>
+                    <textarea class="form-control" id="search-keyword" rows="4" placeholder="例如：系统有哪些核心功能？"></textarea>
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small">检索模式</label>
+                        <select class="form-select form-select-sm" id="search-mode">
+                            <option value="semantic">语义检索</option>
+                            <option value="keyword">关键词匹配</option>
+                            <option value="hybrid">混合检索</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">返回条数</label>
+                        <input type="number" class="form-control form-control-sm" id="search-top-k" value="5" min="1" max="20">
+                    </div>
+                </div>
+                <button class="btn btn-primary w-100" type="submit">执行检索</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="content-card">
+            <div class="section-title">检索结果</div>
+            <div id="search-results" class="result-stack">
+                <div class="text-secondary small">提交检索请求后，相关片段会显示在这里。</div>
+            </div>
+            <div id="search-pagination" class="d-flex justify-content-center mt-3 d-none"></div>
+        </div>
+    </div>
+</div>
+
+<div class="content-card mt-4">
+    <div class="section-title">最近检索记录</div>
+    <div class="table-responsive">
+        <table class="table align-middle" id="search-history-table">
+            <thead>
+                <tr>
+                    <th>时间</th>
+                    <th>关键词</th>
+                    <th>返回条数</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in recent_searches %}
+                <tr>
+                    <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ item.keyword }}</td>
+                    <td>{{ item.top_k }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="3" class="text-center text-secondary">暂无检索记录</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

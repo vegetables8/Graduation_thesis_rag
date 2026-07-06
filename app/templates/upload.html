@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}资料上传 — Atlas{% endblock %}
+{% block page_heading %}资料上传与索引{% endblock %}
+{% block page_subheading %}上传文档后自动解析、分块并建立向量索引{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="content-card">
+            <div class="section-title">上传文件</div>
+            <form id="upload-form">
+                <div class="mb-3">
+                    <label class="form-label">选择文件</label>
+                    <input class="form-control" type="file" name="file" id="upload-file" required>
+                </div>
+                <div class="small text-secondary mb-3">支持 TXT、MD、PDF、DOCX，上传后自动建立向量索引。</div>
+                <button class="btn btn-primary w-100" type="submit">上传并建立索引</button>
+            </form>
+            <div id="upload-message" class="mt-3"></div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="content-card">
+            <div class="section-title">最近上传</div>
+            <div class="table-responsive">
+                <table class="table align-middle" id="upload-document-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>文件名</th>
+                            <th>状态</th>
+                            <th>分块数</th>
+                            <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documents %}
+                        <tr>
+                            <td>{{ doc.id }}</td>
+                            <td>{{ doc.original_name }}</td>
+                            <td><span class="badge text-bg-light">{{ doc.status }}</span></td>
+                            <td>{{ doc.chunk_count }}</td>
+                            <td>{{ doc.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="text-center text-secondary">暂无资料</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

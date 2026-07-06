@@ -1,0 +1,126 @@
+﻿{% extends "base.html" %}
+
+{% block title %}资料中心 — Atlas{% endblock %}
+{% block page_heading %}资料中心{% endblock %}
+{% block page_subheading %}查看知识库文档、状态与分块信息{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div>
+            <div class="section-title mb-1">资料清单</div>
+            <div class="small text-secondary">所有已登录用户均可查看资料索引结果。</div>
+        </div>
+        <div class="d-flex gap-2">
+            {% if current_user.role == 'topic_admin' %}
+            <button class="btn btn-outline-danger btn-sm d-none" id="batch-delete-btn" onclick="batchDeleteDocuments()">
+                批量删除
+            </button>
+            <a class="btn btn-primary btn-sm" href="{{ url_for('main.upload_page') }}">上传资料</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle" id="document-table">
+            <thead>
+                <tr>
+                    {% if current_user.role == 'topic_admin' %}
+                    <th style="width:40px"><input type="checkbox" id="select-all-docs" title="全选"></th>
+                    {% endif %}
+                    <th>ID</th>
+                    <th>文件名</th>
+                    <th>状态</th>
+                    <th>分块数</th>
+                    <th>上传人</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documents %}
+                <tr data-doc-id="{{ doc.id }}">
+                    {% if current_user.role == 'topic_admin' %}
+                    <td><input type="checkbox" class="doc-checkbox" value="{{ doc.id }}"></td>
+                    {% endif %}
+                    <td>{{ doc.id }}</td>
+                    <td>
+                        <a href="#" class="doc-detail-link" data-doc-id="{{ doc.id }}" onclick="showDocumentDetail(this.dataset.docId); return false;">
+                            {{ doc.original_name }}
+                        </a>
+                    </td>
+                    <td><span class="badge text-bg-light">{{ doc.status }}</span></td>
+                    <td>{{ doc.chunk_count }}</td>
+                    <td>{{ doc.uploader.username if doc.uploader else '' }}</td>
+                    <td>{{ doc.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-outline-secondary btn-sm" data-doc-id="{{ doc.id }}" onclick="showDocumentDetail(this.dataset.docId)" title="查看详情">
+                                详情
+                            </button>
+                            {% if current_user.role == 'topic_admin' %}
+                            <button class="btn btn-outline-warning btn-sm" data-doc-id="{{ doc.id }}" onclick="reindexDocument(this.dataset.docId)" title="重建索引">
+                                重索引
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" data-doc-id="{{ doc.id }}" data-doc-name="{{ doc.original_name }}" onclick="deleteDocument(this.dataset.docId, this.dataset.docName)" title="删除文档">
+                                删除
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                {% set col_count = 8 if current_user.role == 'topic_admin' else 7 %}
+                <tr id="empty-doc-row"><td colspan="{{ col_count }}" class="text-center text-secondary py-4">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📄</div>
+                        <div class="empty-state-text">知识库中还没有资料</div>
+                        {% if current_user.role == 'topic_admin' %}
+                        <a href="{{ url_for('main.upload_page') }}" class="btn btn-primary btn-sm mt-2">上传第一份资料</a>
+                        {% endif %}
+                    </div>
+                </td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 资料详情 Modal -->
+<div class="modal fade" id="document-detail-modal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">资料详情</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="document-detail-body">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <div class="mt-2 text-secondary">加载中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 删除确认 Modal -->
+<div class="modal fade" id="delete-confirm-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">确认删除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>确定要删除资料 <strong id="delete-doc-name"></strong> 吗？</p>
+                <p class="text-danger small">此操作会同时删除向量数据、分块记录和磁盘文件，不可恢复。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete-btn" onclick="confirmDeleteDocument()">确认删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
